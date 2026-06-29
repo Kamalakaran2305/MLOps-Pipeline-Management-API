@@ -57,66 +57,197 @@ curl http://localhost:8080/api/v1
 ---
 
 
-## Sample curl Commands
+## Seed Data
 
-### 1. Discovery endpoint
+The server automatically loads sample data on startup:
+
+| ID | Name | Type |
+|---|---|---|
+| WS-VISION-01 | Computer Vision Lab | Workspace |
+| WS-NLP-02 | NLP Research Team | Workspace |
+| WS-ROBOTICS-03 | Robotics Engineering | Workspace |
+| MOD-8832 | TensorFlow Model | Model (DEPLOYED) |
+| MOD-1011 | PyTorch Model | Model (TRAINING) |
+| MOD-5500 | Scikit-Learn Model | Model (DEPRECATED) |
+
+---
+
+## Complete API Endpoints Table
+
+| Method | Endpoint | Description | Success Code | Error Codes |
+|---|---|---|---|---|
+| GET | /api/v1 | API discovery and resource links | 200 | - |
+| GET | /api/v1/workspaces | Get all workspaces | 200 | - |
+| POST | /api/v1/workspaces | Create a new workspace | 201 | 400, 409 |
+| GET | /api/v1/workspaces/{workspaceId} | Get workspace by ID | 200 | 404 |
+| HEAD | /api/v1/workspaces/{workspaceId} | Check workspace exists | 200 | 404 |
+| DELETE | /api/v1/workspaces/{workspaceId} | Delete a workspace | 204 | 404, 409 |
+| GET | /api/v1/models | Get all models | 200 | - |
+| GET | /api/v1/models?status={status} | Filter models by status | 200 | - |
+| POST | /api/v1/models | Create a new model | 201 | 422 |
+| POST | /api/v1/models | Create model with invalid workspaceId | - | 422 |
+| GET | /api/v1/models/{modelId} | Get model by ID | 200 | 404 |
+| GET | /api/v1/models/{modelId}/metrics | Get all evaluation metrics | 200 | 404 |
+| POST | /api/v1/models/{modelId}/metrics | Add a new evaluation metric | 201 | 403, 404 |
+| POST | /api/v1/models/{modelId}/metrics | Reading on DEPRECATED model | - | 403 |
+
+---
+
+## API Endpoints
+
+### Discovery
+
+#### GET /api/v1
+
+Returns API metadata and resource links.
+
 ```bash
-curl -X GET http://localhost:8080/api/v1
+curl http://localhost:8080/api/v1
 ```
 
-### 2. Get all workspaces
-```bash
-curl -X GET http://localhost:8080/api/v1/workspaces
+Response 200:
+```json
+{
+    "name": "MLOps Pipeline Management API",
+    "version": "1.0",
+    "description": "RESTful API for managing ML Workspaces, Models, and Evaluation Metrics",
+    "contact": "admin@mlops-lab.com",
+    "resources": {
+        "workspaces": "/api/v1/workspaces",
+        "models": "/api/v1/models"
+    }
+}
 ```
 
-### 3. Create a new workspace
+---
+
+### Workspaces
+
+#### GET /api/v1/workspaces — Get all workspaces
+
+```bash
+curl http://localhost:8080/api/v1/workspaces
+```
+
+#### POST /api/v1/workspaces — Create a workspace
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/workspaces \
   -H "Content-Type: application/json" \
   -d '{"id":"WS-TEST-99","teamName":"Test Team","storageQuotaGb":100}'
 ```
 
-### 4. Get all DEPLOYED models (filtered)
+#### GET /api/v1/workspaces/{workspaceId} — Get workspace by ID
+
 ```bash
-curl -X GET "http://localhost:8080/api/v1/models?status=DEPLOYED"
+curl http://localhost:8080/api/v1/workspaces/WS-VISION-01
 ```
 
-### 5. Create a new model (server generates the ID)
+#### DELETE /api/v1/workspaces/{workspaceId} — Delete a workspace (no models)
+
+```bash
+curl -X DELETE http://localhost:8080/api/v1/workspaces/WS-ROBOTICS-03
+```
+
+---
+
+### Models
+
+#### GET /api/v1/models — Get all models
+
+```bash
+curl http://localhost:8080/api/v1/models
+```
+
+#### GET /api/v1/models?status=DEPLOYED — Filter by status
+
+```bash
+curl "http://localhost:8080/api/v1/models?status=DEPLOYED"
+```
+
+#### POST /api/v1/models — Create a valid model
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/models \
   -H "Content-Type: application/json" \
   -d '{"framework":"PyTorch","status":"TRAINING","latestAccuracy":0.81,"workspaceId":"WS-VISION-01"}'
 ```
 
-### 6. Post an evaluation metric for a model
+#### GET /api/v1/models/{modelId} — Get model by ID
+
+```bash
+curl http://localhost:8080/api/v1/models/MOD-8832
+```
+
+---
+
+### Evaluation Metrics
+
+#### GET /api/v1/models/{modelId}/metrics — Get metric history
+
+```bash
+curl http://localhost:8080/api/v1/models/MOD-8832/metrics
+```
+
+#### POST /api/v1/models/{modelId}/metrics — Add a metric
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/models/MOD-8832/metrics \
   -H "Content-Type: application/json" \
   -d '{"accuracyScore":0.97}'
 ```
 
-### 7. Get all metrics for a model
+---
+
+### Error Responses
+
+#### 409 Conflict — Delete workspace that still has models
+
 ```bash
-curl -X GET http://localhost:8080/api/v1/models/MOD-8832/metrics
+curl -X DELETE http://localhost:8080/api/v1/workspaces/WS-VISION-01
 ```
 
-### 8. Delete a workspace (fails if models exist — 409)
-```bash
-curl -X DELETE http://localhost:8080/api/v1/workspaces/WS-ROBOTICS-03
+Response:
+```json
+{
+    "status": 409,
+    "error": "Conflict",
+    "message": "Workspace WS-VISION-01 cannot be deleted as it still has models assigned to it."
+}
 ```
 
-### 9. Post metric to DEPRECATED model (fails — 403)
+#### 422 Unprocessable Entity — Model with invalid workspaceId
+
+```bash
+curl -X POST http://localhost:8080/api/v1/models \
+  -H "Content-Type: application/json" \
+  -d '{"framework":"TensorFlow","status":"TRAINING","latestAccuracy":0.5,"workspaceId":"WS-FAKE-00"}'
+```
+
+Response:
+```json
+{
+    "status": 422,
+    "error": "Unprocessable Entity",
+    "message": "Workspace with ID 'WS-FAKE-00' does not exist."
+}
+```
+
+#### 403 Forbidden — Add metric to DEPRECATED model
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/models/MOD-5500/metrics \
   -H "Content-Type: application/json" \
   -d '{"accuracyScore":0.70}'
 ```
 
-### 10. Create model with non-existent workspaceId (fails — 422)
-```bash
-curl -X POST http://localhost:8080/api/v1/models \
-  -H "Content-Type: application/json" \
-  -d '{"framework":"TensorFlow","status":"TRAINING","latestAccuracy":0.5,"workspaceId":"WS-FAKE-00"}'
+Response:
+```json
+{
+    "status": 403,
+    "error": "Forbidden",
+    "message": "Model MOD-5500 is DEPRECATED and cannot accept new evaluation metrics."
+}
 ```
 
 ---
