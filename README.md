@@ -4,14 +4,15 @@ A RESTful API built with **JAX-RS (Jersey 2.35)** and **Grizzly** for managing M
 
 ---
 
-## API Overview
+## Student Information
 
-| Resource | Base Path |
-|---|---|
-| Discovery | `GET /api/v1` |
-| Workspaces | `/api/v1/workspaces` |
-| Models | `/api/v1/models` |
-| Metrics (sub-resource) | `/api/v1/models/{modelId}/metrics` |
+| Field | Details |
+| :--- | :--- |
+| **Name** | Kamalakaran |
+| **Module** | 5COSC022C.2 Client-Server Architectures |
+| **University** | University of Westminster |
+| **GitHub Repo** | [https://github.com/Kamalakaran2305/MLOps-Pipeline-Management-API](https://github.com/Kamalakaran2305/MLOps-Pipeline-Management-API) |
+| **Submission Date** | June 2026 |
 
 ---
 
