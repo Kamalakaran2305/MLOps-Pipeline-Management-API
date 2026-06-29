@@ -8,7 +8,7 @@ A RESTful API built with **JAX-RS (Jersey 2.35)** and **Grizzly** for managing M
 
 | Field | Details |
 | :--- | :--- |
-| **Name** | Kamalakaran |
+| **Name** | Kamalakaran Raveendrakumar |
 | **Module** | 5COSC022C.2 Client-Server Architectures |
 | **University** | University of Westminster |
 | **GitHub Repo** | [https://github.com/Kamalakaran2305/MLOps-Pipeline-Management-API](https://github.com/Kamalakaran2305/MLOps-Pipeline-Management-API) |
