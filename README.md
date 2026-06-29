@@ -19,26 +19,43 @@ A RESTful API built with **JAX-RS (Jersey 2.35)** and **Grizzly** for managing M
 ## How to Build and Run
 
 ### Prerequisites
-- Java 11+
-- Maven 3.6+
 
-### Build
+* Java 11 or higher
+* Maven 3.6 or higher
+* NetBeans IDE (recommended) or any Java IDE
+
+### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/MLOpsAPI.git
+cd MLOpsAPI
+```
+
+### Step 2 — Build the project
+
 ```bash
 mvn clean package
 ```
-This produces `target/MLOpsAPI-1.0-SNAPSHOT-jar-with-dependencies.jar`.
 
-### Run
+### Step 3 — Run the server
+
 ```bash
 java -jar target/MLOpsAPI-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
-Server starts at: `http://localhost:8080/`  
-API base path: `http://localhost:8080/api/v1`
+Or run directly from NetBeans:
 
-Press **Enter** to stop the server.
+* Open `Main.java`
+* Press **F6** to run
+
+### Step 4 — Verify server is running
+
+```bash
+curl http://localhost:8080/api/v1
+```
 
 ---
+
 
 ## Sample curl Commands
 
