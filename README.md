@@ -27,7 +27,7 @@ A RESTful API built with **JAX-RS (Jersey 2.35)** and **Grizzly** for managing M
 ### Step 1 — Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/MLOpsAPI.git
+git clone https://github.com/Kamalakaran2305/MLOpsAPI.git
 cd MLOpsAPI
 ```
 
